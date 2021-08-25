@@ -1,5 +1,5 @@
 spring:
-    security:
-        user:
-            name: thiago
-            password: 12345
+    datasource:
+        url: jdbc:mysql://database-1.c9srkvngeiq3.sa-east-1.rds.amazonaws.com/springsec
+        username: admin
+        password: 29121109
