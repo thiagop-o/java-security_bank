@@ -1,5 +1,7 @@
 package com.crowtech.config;
 
+import com.crowtech.filters.AuthoritiesLoggingAfterFilter;
+import com.crowtech.filters.RequestValidationBeforeFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -79,8 +82,10 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
                         return config;
                     }
         }).and().csrf().ignoringAntMatchers("/contact")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and().
-                authorizeRequests()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .authorizeRequests()
                 .antMatchers("/myAccount").hasRole("USER")
                 .antMatchers("/myBalance").hasRole("ADMIN")
                 .antMatchers("/myLoans").hasRole("ADMIN2")
