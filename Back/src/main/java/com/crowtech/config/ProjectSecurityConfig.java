@@ -65,31 +65,30 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //Default Configuration
-        //http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
-
-        //Custom Configurations
+        //http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic()
 
         http.cors().configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                config.setAllowedMethods(Collections.singletonList("*"));
-                config.setAllowCredentials(true);
-                config.setAllowedHeaders(Collections.singletonList("*"));
-                config.setMaxAge(3600L);
-                return config;
-            }
-        }).and().csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and().
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowCredentials(true);
+                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setMaxAge(3600L);
+                        return config;
+                    }
+        }).and().csrf().ignoringAntMatchers("/contact")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and().
                 authorizeRequests()
-                .antMatchers("/myAccount").authenticated()
-                .antMatchers("/myBalance").authenticated()
-                .antMatchers("/myLoans").authenticated()
+                .antMatchers("/myAccount").hasRole("USER")
+                .antMatchers("/myBalance").hasRole("ADMIN")
+                .antMatchers("/myLoans").hasRole("ADMIN2")
                 .antMatchers("/myCards").authenticated()
                 .antMatchers("/notices").permitAll()
                 .antMatchers("/contact").permitAll()
-                .and()
-                .formLogin().and().httpBasic();
+                .and().httpBasic();
+        //.formLogin().and().httpBasic();
 
 
 
